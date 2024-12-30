@@ -24,5 +24,13 @@ module.exports = (env) => {
         },
       ],
     },
+    devServer: {
+      client: {
+        overlay: {
+          warnings: false,
+          errors: true
+        }
+      }
+    }
   }
 };
