@@ -1,6 +1,3 @@
-import  './scss/styles.scss';
-import * as bootstrap from 'bootstrap';
-import { View, watchedState } from './view';
-import controller from './controller/controller.js';
+import runApp from './init.js';
 
-controller();
+runApp();

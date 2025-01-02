@@ -4,7 +4,7 @@ import state from './model.js'
 
 export class View {
   render(path, value) {
-    console.log(path, value)
+    //console.log(path, value)
     if (path === 'rssForm.state' || path === 'rssForm.error') {
       const input = document.querySelector('#url-input');
       const feedback = document.querySelector('.feedback');

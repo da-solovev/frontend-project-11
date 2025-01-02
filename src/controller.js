@@ -1,5 +1,5 @@
-import validateUrl from "./validation.js";
-import { watchedState } from "../view.js";
+import validateUrl from "./utils/validation.js";
+import { watchedState } from "./view.js";
 
 export default () => {
   const rssInputForm = document.querySelector('form.rss-form');
@@ -20,9 +20,6 @@ export default () => {
         watchedState.rssForm.error = err.message;
         watchedState.rssForm.state = 'error';
       })
-
-
-    
   }
   
   rssInputForm.addEventListener('submit', (e) => handleSubmitForm(e));

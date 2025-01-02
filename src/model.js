@@ -4,5 +4,5 @@ export default {
     links: [],
     error: null,
   },
-
+  locale: 'ru',
 }
