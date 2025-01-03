@@ -1,6 +1,8 @@
 import * as yup from 'yup';
 import i18next from 'i18next';
 
+
+
 const validateUrl = async (url, addedUrl = []) => {
   yup.setLocale({
     mixed: {
@@ -14,7 +16,6 @@ const validateUrl = async (url, addedUrl = []) => {
   const schema = yup.string()
     .notOneOf(addedUrl)
     .url();
-
   return schema.validate(url);
 }
 
