@@ -1,8 +1,12 @@
 export default {
   rssForm: {
-    state: 'waiting', //sending, successful, error, 
+    state: 'filling', //sending, successful, error
     links: [],
     error: null,
+  },
+  data: {
+    feeds: [],
+    posts: [],
   },
   locale: 'ru',
 }
