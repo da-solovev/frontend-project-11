@@ -3,22 +3,39 @@ import { generateProxyUrl } from './utils/proxy.js'
 import state from './model.js'
 import onChange from "on-change";
 import { parseRSS } from "./utils/parse.js";
+import uniqueId from 'lodash/uniqueId.js';
+import { watchedState } from "./view.js";
 
-const watchedUrl = {
+const watchedChannels = {
   urlList: [],
   status: 'off',
 };
 
 const watch = (urlList) => {
-  const watchedUrls = urlList.map((url) => {
+  const watchedChannelss = urlList.map((url) => {
     return axios.get(url)
-
     //добавить catch с обработкой сетевых ошибок и парсинга
   })
-  Promise.all(watchedUrls)
+  Promise.all(watchedChannelss)
   .then((responces) => {
     const parseData = responces.map((responce) => parseRSS(responce.data.contents));
-    console.log(parseData);
+    parseData.forEach((channel) => {
+      const currentFeed = state.data.feeds.find((item) => item.title === channel.title);
+      const postsFromState = state.data.posts.filter((post) => post.feedId === currentFeed.id);
+      const postsFromChannel = channel.items;
+      postsFromChannel.forEach((post) => {
+        if(!postsFromState.find((oldPost) => oldPost.title === post.title)) {
+          const newPost = {
+            id: uniqueId(),
+            feedId: currentFeed.id,
+            title: post.title,
+            description: post.description,
+            link: post.link,
+          }
+          watchedState.data.posts.unshift(newPost);
+        }
+      })
+    })
   })
   .then(() => setTimeout(() => watch(urlList), 5000));
 }
@@ -33,15 +50,4 @@ const startWatch = (path, value, prevValue) => {
   }
 }
 
-const watchRssStream = (url) => {
-  /*
-  Берем исходное состояние для фида (посты)
-  Каждые 5 сек получаем новые данные
-    если новые данные равны с исходными - ничего не делаем
-    если новые данные отличаются от исходных - ищем пересечение (только новые) и добавляем их в state
-  Новое состояние записываем в исходное состояние
-   */
-}
-
-
-export const watchedNetwork = onChange(watchedUrl, startWatch);
+export const watchedNetwork = onChange(watchedChannels, startWatch);
