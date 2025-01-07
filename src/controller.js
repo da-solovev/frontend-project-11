@@ -64,8 +64,40 @@ export default () => {
           throw err
         }
       })
+
+      const clickBtnHandler = (e) => {
+        if (!e.target.closest('button')) {
+          return;
+        }
+        const post = watchedState.data.posts.find((item) => item.id === e.target.dataset.id);
+        const modalTitle = document.querySelector('.modal-title');
+        const modalDescription = document.querySelector('.modal-body');
+        modalTitle.textContent = post.title;
+        modalDescription.textContent = post.description;
+        if (!watchedState.uiState.readPosts.find((item) => item === e.target.dataset.id)) {
+          watchedState.uiState.readPosts.push(e.target.dataset.id);
+        }
+      }
+
+      const clickLinkHandler = (e) => {
+        if (!e.target.closest('a')) {
+          return;
+        }
+        if (!watchedState.uiState.readPosts.find((item) => item === e.target.dataset.id)) {
+          watchedState.uiState.readPosts.push(e.target.dataset.id);
+        }
+      }
+
+      const postsContainer = document.querySelector('div.posts');
+      postsContainer.addEventListener('click', (e) => clickBtnHandler(e));
+      postsContainer.addEventListener('click', (e) => clickLinkHandler(e));
   }
+
+  
+
+
   
   rssInputForm.addEventListener('submit', (e) => handleSubmitForm(e));
+  
 }
 

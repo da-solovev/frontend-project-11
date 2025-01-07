@@ -8,5 +8,8 @@ export default {
     feeds: [],
     posts: [],
   },
+  uiState: {
+    readPosts: [],
+  },
   locale: 'ru',
 }

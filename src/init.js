@@ -1,7 +1,5 @@
 import i18next from "i18next";
 import  './style/styles.scss';
-import * as bootstrap from 'bootstrap';
-import { View, watchedState } from './view';
 import controller from './controller.js';
 import ru from './locales/ru.js';
 import en from './locales/en.js'
@@ -17,4 +15,5 @@ export default async () => {
   });
 
   controller();
+  
 }
