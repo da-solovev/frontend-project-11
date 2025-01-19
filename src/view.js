@@ -1,31 +1,27 @@
 import onChange from 'on-change';
 import state from './model.js';
+import addClasses from './utils/editDOMHelpers.js';
 
 const createFeedsList = (feeds) => {
   const container = document.createElement('div');
-  container.classList.add('card');
-  container.classList.add('border-0');
+  addClasses(container, ['card', 'border-0']);
   const containerTitle = document.createElement('div');
   containerTitle.classList.add('card-body');
   const title = document.createElement('h2');
   title.textContent = 'Фиды';
-  title.classList.add('card-title');
-  title.classList.add('h4');
+  addClasses(title, ['card-title', 'h4']);
   containerTitle.append(title);
   container.append(containerTitle);
   const ul = document.createElement('ul');
-  ul.classList.add('list-group');
-  ul.classList.add('border-0');
+  addClasses(ul, ['list-group', 'border-0']);
   feeds.forEach((feed) => {
     const li = document.createElement('li');
-    li.classList.add('list-group-item');
-    li.classList.add('border-0');
+    addClasses(li, ['list-group-item', 'border-0']);
     const title = document.createElement('h3');
     title.classList.add('h6');
     title.textContent = feed.title;
     const description = document.createElement('p');
-    description.classList.add('small');
-    description.classList.add('text-black-50');
+    addClasses(description, ['small', 'text-black-50']);
     description.textContent = feed.description;
     li.append(title);
     li.append(description);
@@ -37,26 +33,19 @@ const createFeedsList = (feeds) => {
 
 const createPostsList = (posts) => {
   const container = document.createElement('div');
-  container.classList.add('card');
-  container.classList.add('border-0');
+  addClasses(container, ['card', 'border-0']);
   const containerTitle = document.createElement('div');
   containerTitle.classList.add('card-body');
   const title = document.createElement('h2');
   title.textContent = 'Посты';
-  title.classList.add('card-title');
-  title.classList.add('h4');
+  addClasses(title, ['card-title', 'h4']);
   containerTitle.append(title);
   container.append(containerTitle);
   const ul = document.createElement('ul');
-  ul.classList.add('list-group');
-  ul.classList.add('border-0');
+  addClasses(ul, ['list-group', 'border-0']);
   posts.forEach((post) => {
     const li = document.createElement('li');
-    li.classList.add('list-group-item');
-    li.classList.add('d-flex');
-    li.classList.add('justify-content-between');
-    li.classList.add('align-items-start');
-    li.classList.add('border-0');
+    addClasses(li, ['list-group-item', 'd-flex', 'justify-content-between', 'align-items-start', 'border-0']);
     const link = document.createElement('a');
     link.textContent = post.title;
     link.setAttribute('href', post.link);
@@ -66,12 +55,10 @@ const createPostsList = (posts) => {
       ? link.classList.add('fw-normal')
       : link.classList.add('fw-bold');
     const button = document.createElement('button');
+    addClasses(button, ['btn', 'btn-outline-primary', 'btn-sm']);
     button.setAttribute('type', 'button');
     button.setAttribute('data-bs-toggle', 'modal');
     button.setAttribute('data-bs-target', '#Modal');
-    button.classList.add('btn');
-    button.classList.add('btn-outline-primary');
-    button.classList.add('btn-sm');
     button.setAttribute('data-id', post.id);
     button.textContent = 'Просмотр';
     li.append(link);
