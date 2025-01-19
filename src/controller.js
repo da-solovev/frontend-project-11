@@ -1,14 +1,13 @@
-import validateUrl from "./utils/validation.js";
-import { watchedState } from "./view.js";
-import axios, { AxiosError } from "axios";
-import { ValidationError } from 'yup';
-import { generateProxyUrl } from './utils/proxy.js'
-import { ParseError, parseRSS } from "./utils/parse.js";
+import axios from 'axios';
 import uniqueId from 'lodash/uniqueId.js';
+import validateUrl from './utils/validation.js';
+import { watchedState } from './view.js';
+import generateProxyUrl from './utils/proxy.js';
+import { parseRSS } from './utils/parse.js';
 import { watchedNetwork } from './network.js';
+import getErrorMessage from './utils/errorsMessage.js';
 
-
-export default () => {
+export default (i18nextInstance) => {
   const rssInputForm = document.querySelector('form.rss-form');
   const input = document.querySelector('#url-input');
 
@@ -17,7 +16,7 @@ export default () => {
     const formData = new FormData(e.target);
     const link = formData.get('url');
     const proxyUrl = generateProxyUrl(link);
-    validateUrl(link, watchedState.rssForm.links)
+    validateUrl(i18nextInstance, link, watchedState.rssForm.links)
       .then(() => {
         watchedState.rssForm.state = 'sending';
         return axios.get(proxyUrl);
@@ -31,73 +30,58 @@ export default () => {
           description: parseData.description,
           link: proxyUrl,
         };
-        const postsList = parseData.items.map((item) => {
-          return {
-            id: uniqueId(),
-            feedId: feedId,
-            title: item.title,
-            description: item.description,
-            link: item.link,
-          }
-        });
+        const postsList = parseData.items.map((item) => ({
+          id: uniqueId(),
+          feedId,
+          title: item.title,
+          description: item.description,
+          link: item.link,
+        }));
         watchedState.data.feeds.unshift(newFeed);
         watchedState.data.posts = postsList.concat(watchedState.data.posts);
       })
       .then(() => {
-        //убрать + переделать проверку на уникальность
+        // убрать + переделать проверку на уникальность
         watchedState.rssForm.links.push(formData.get('url'));
-        ///////////
+        /// ////////
         watchedNetwork.urlList.push(proxyUrl.href);
         rssInputForm.reset();
         input.focus();
+        watchedState.rssForm.state = 'successful';
       })
       .catch((err) => {
         watchedState.rssForm.state = 'error';
-        // сделать через switch
-        if (err instanceof ValidationError) {
-          watchedState.rssForm.error = err.message;
-        } else if (err instanceof AxiosError) {
-          watchedState.rssForm.error = 'Ошибка сети';
-        } else if (err instanceof ParseError) {
-          watchedState.rssForm.error = 'Ресурс не содержит валидный RSS';
-        } else {
-          throw err
-        }
-      })
+        const errorMessage = getErrorMessage(err, i18nextInstance);
+        watchedState.rssForm.error = errorMessage;
+      });
 
-      const clickBtnHandler = (e) => {
-        if (!e.target.closest('button')) {
-          return;
-        }
-        const post = watchedState.data.posts.find((item) => item.id === e.target.dataset.id);
-        const modalTitle = document.querySelector('.modal-title');
-        const modalDescription = document.querySelector('.modal-body');
-        modalTitle.textContent = post.title;
-        modalDescription.textContent = post.description;
-        if (!watchedState.uiState.readPosts.find((item) => item === e.target.dataset.id)) {
-          watchedState.uiState.readPosts.push(e.target.dataset.id);
-        }
+    const clickBtnHandler = (e) => {
+      if (!e.target.closest('button')) {
+        return;
       }
-
-      const clickLinkHandler = (e) => {
-        if (!e.target.closest('a')) {
-          return;
-        }
-        if (!watchedState.uiState.readPosts.find((item) => item === e.target.dataset.id)) {
-          watchedState.uiState.readPosts.push(e.target.dataset.id);
-        }
+      const post = watchedState.data.posts.find((item) => item.id === e.target.dataset.id);
+      const modalTitle = document.querySelector('.modal-title');
+      const modalDescription = document.querySelector('.modal-body');
+      modalTitle.textContent = post.title;
+      modalDescription.textContent = post.description;
+      if (!watchedState.uiState.readPosts.find((item) => item === e.target.dataset.id)) {
+        watchedState.uiState.readPosts.push(e.target.dataset.id);
       }
+    };
 
-      const postsContainer = document.querySelector('div.posts');
-      postsContainer.addEventListener('click', (e) => clickBtnHandler(e));
-      postsContainer.addEventListener('click', (e) => clickLinkHandler(e));
-  }
+    const clickLinkHandler = (e) => {
+      if (!e.target.closest('a')) {
+        return;
+      }
+      if (!watchedState.uiState.readPosts.find((item) => item === e.target.dataset.id)) {
+        watchedState.uiState.readPosts.push(e.target.dataset.id);
+      }
+    };
 
-  
+    const postsContainer = document.querySelector('div.posts');
+    postsContainer.addEventListener('click', (e) => clickBtnHandler(e));
+    postsContainer.addEventListener('click', (e) => clickLinkHandler(e));
+  };
 
-
-  
   rssInputForm.addEventListener('submit', (e) => handleSubmitForm(e));
-  
-}
-
+};

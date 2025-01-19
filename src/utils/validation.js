@@ -1,15 +1,12 @@
 import * as yup from 'yup';
-import i18next from 'i18next';
 
-
-
-const validateUrl = async (url, addedUrl = []) => {
+const validateUrl = async (i18nextInstance, url, addedUrl = []) => {
   yup.setLocale({
     mixed: {
-      notOneOf: i18next.t('errors.noUniqueUrl'),
+      notOneOf: i18nextInstance.t('errors.noUniqueUrl'),
     },
     string: {
-      url: i18next.t('errors.noValidUrl'),
+      url: i18nextInstance.t('errors.noValidUrl'),
     },
   });
 
@@ -17,6 +14,6 @@ const validateUrl = async (url, addedUrl = []) => {
     .notOneOf(addedUrl)
     .url();
   return schema.validate(url);
-}
+};
 
 export default validateUrl;
