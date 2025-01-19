@@ -1,6 +1,6 @@
 export default {
   rssForm: {
-    state: 'filling', //sending, successful, error
+    state: 'filling',
     links: [],
     error: null,
   },
@@ -12,4 +12,4 @@ export default {
     readPosts: [],
   },
   locale: 'ru',
-}
+};

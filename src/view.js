@@ -1,4 +1,4 @@
-import onChange from "on-change";
+import onChange from 'on-change';
 import state from './model.js';
 
 const createFeedsList = (feeds) => {
@@ -30,10 +30,10 @@ const createFeedsList = (feeds) => {
     li.append(title);
     li.append(description);
     ul.append(li);
-  })
-  container.append(ul)
+  });
+  container.append(ul);
   return feeds.length > 0 ? container : null;
-}
+};
 
 const createPostsList = (posts) => {
   const container = document.createElement('div');
@@ -48,7 +48,7 @@ const createPostsList = (posts) => {
   containerTitle.append(title);
   container.append(containerTitle);
   const ul = document.createElement('ul');
-  ul.classList.add('list-group')
+  ul.classList.add('list-group');
   ul.classList.add('border-0');
   posts.forEach((post) => {
     const li = document.createElement('li');
@@ -62,9 +62,9 @@ const createPostsList = (posts) => {
     link.setAttribute('href', post.link);
     link.setAttribute('data-id', post.id);
     link.setAttribute('target', '_blank');
-    watchedState.uiState.readPosts.find((item) => item === post.id) ?
-      link.classList.add('fw-normal') :
-      link.classList.add('fw-bold');
+    watchedState.uiState.readPosts.find((item) => item === post.id)
+      ? link.classList.add('fw-normal')
+      : link.classList.add('fw-bold');
     const button = document.createElement('button');
     button.setAttribute('type', 'button');
     button.setAttribute('data-bs-toggle', 'modal');
@@ -77,27 +77,32 @@ const createPostsList = (posts) => {
     li.append(link);
     li.append(button);
     ul.append(li);
-  })
-  container.append(ul)
+  });
+  container.append(ul);
   return posts.length > 0 ? container : null;
-}
+};
 
 export class View {
-  render(path, value) {
+  render(path) {
     if (path === 'rssForm.state' || path === 'rssForm.error') {
       const input = document.querySelector('#url-input');
       const feedback = document.querySelector('.feedback');
+      input.classList.remove('is-invalid');
+      feedback.classList.remove('text-danger');
       if (state.rssForm.state === 'error') {
         input.classList.add('is-invalid');
+        feedback.classList.add('text-danger');
         feedback.textContent = state.rssForm.error;
       }
       if (state.rssForm.state === 'sending') {
-        input.classList.remove('is-invalid');
         feedback.textContent = '';
       }
       if (state.rssForm.state === 'filling') {
-        input.classList.remove('is-invalid');
         feedback.textContent = '';
+      }
+      if (state.rssForm.state === 'successful') {
+        feedback.classList.add('text-success');
+        feedback.textContent = 'RSS успешно загружен';
       }
     }
     if (path === 'data.feeds') {
