@@ -1,24 +1,49 @@
-export class ParseError {};
+import uniqueId from 'lodash/uniqueId.js';
+
+export class ParseError {}
 
 export const parseRSS = (string) => {
   const parser = new DOMParser();
-  const doc = parser.parseFromString(string, "application/xml");
+  const doc = parser.parseFromString(string, 'application/xml');
   if (doc.querySelector('parsererror')) {
-    throw new ParseError()
+    throw new ParseError();
   }
-  const title = doc.querySelector('title')?.textContent || '';
-  const description = doc.querySelector('description')?.textContent || '';
+  const feedTitle = doc.querySelector('title')?.textContent || '';
+  const feedDescription = doc.querySelector('description')?.textContent || '';
   const itemsNodeList = doc.querySelectorAll('item');
-  const items = [];
+  let posts = [];
   itemsNodeList.forEach((item) => {
-    const title = item.querySelector('title')?.textContent || '';
-    const description = item.querySelector('description')?.textContent || '';
-    const link = item.querySelector('link')?.textContent || '';
-    items.push({ title, description, link }); 
-  })
+    const postTitle = item.querySelector('title')?.textContent || '';
+    const postDescription = item.querySelector('description')?.textContent || '';
+    const postLink = item.querySelector('link')?.textContent || '';
+    posts = [...posts, { postTitle, postDescription, postLink }];
+  });
   return {
-    title,
-    description,
-    items,
-  }
-}
+    feed: {
+      feedTitle,
+      feedDescription,
+    },
+    posts,
+  };
+};
+
+export const generateNewFeed = (data, link) => {
+  const feedId = uniqueId('feed_');
+  return {
+    id: feedId,
+    title: data.feed.feedTitle,
+    description: data.feed.feedDescription,
+    link,
+  };
+};
+
+export const generateNewPosts = (data, feedId) => {
+  const postsList = data.posts.map((post) => ({
+    id: uniqueId('post_'),
+    feedId,
+    title: post.postTitle,
+    description: post.postDescription,
+    link: post.postLink,
+  }));
+  return postsList;
+};

@@ -1,6 +1,6 @@
 import { AxiosError } from 'axios';
 import { ValidationError } from 'yup';
-import { ParseError } from './parse.js';
+import { ParseError } from './utils/parse.js';
 
 const getErrorMessage = (error, i18nextInstance) => {
   switch (true) {

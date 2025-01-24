@@ -1,53 +1,42 @@
-import axios, { AxiosError } from "axios";
-import { generateProxyUrl } from './utils/proxy.js'
-import state from './model.js'
-import onChange from "on-change";
-import { parseRSS } from "./utils/parse.js";
-import uniqueId from 'lodash/uniqueId.js';
-import { watchedState } from "./view.js";
+import axios from 'axios';
+import onChange from 'on-change';
+import state from './model.js';
+import { parseRSS, generateNewPosts } from './utils/parse.js';
+import { watchedState } from './view.js';
 
-const watchedChannels = {
-  urlList: [],
+const watcherRssChannels = {
+  urls: [],
   status: 'off',
 };
 
-const watch = (urlList) => {
-  const watchedChannelss = urlList.map((url) => {
-    return axios.get(url)
-    //добавить catch с обработкой сетевых ошибок и парсинга
-  })
-  Promise.all(watchedChannelss)
-  .then((responces) => {
-    const parseData = responces.map((responce) => parseRSS(responce.data.contents));
-    parseData.forEach((channel) => {
-      const currentFeed = state.data.feeds.find((item) => item.title === channel.title);
-      const postsFromState = state.data.posts.filter((post) => post.feedId === currentFeed.id);
-      const postsFromChannel = channel.items;
-      postsFromChannel.forEach((post) => {
-        if(!postsFromState.find((oldPost) => oldPost.title === post.title)) {
-          const newPost = {
-            id: uniqueId(),
-            feedId: currentFeed.id,
-            title: post.title,
-            description: post.description,
-            link: post.link,
-          }
-          watchedState.data.posts.unshift(newPost);
-        }
-      })
+const watch = (urls) => {
+  const watchedChannels = urls.map((url) => axios.get(url)
+    .catch((err) => {
+      throw err;
+    }));
+  Promise.all(watchedChannels)
+    .then((responces) => {
+      const parseData = responces.map((responce) => parseRSS(responce.data.contents));
+      parseData.forEach((channel) => {
+        const currentFeed = state.data.feeds.find((item) => item.title === channel.feed.feedTitle);
+        const addedPosts = state.data.posts.filter((post) => post.feedId === currentFeed.id);
+        const postsFromResponce = channel.posts;
+        const updatedPosts = postsFromResponce
+          .filter((newPost) => !addedPosts.find((oldPost) => oldPost.title === newPost.postTitle));
+        const newPosts = generateNewPosts({ posts: updatedPosts }, currentFeed.id);
+        watchedState.data.posts = [...newPosts, ...watchedState.data.posts];
+      });
     })
-  })
-  .then(() => setTimeout(() => watch(urlList), 5000));
-}
+    .then(() => setTimeout(() => watch(urls), 5000));
+};
 
-const startWatch = (path, value, prevValue) => {
-  if (path === 'urlList') {
-    watchedNetwork.status = 'on';
+const startWatch = (path) => {
+  if (path === 'urls') {
+    watcherRssChannels.status = 'on';
+    watch(watcherRssChannels.urls);
   }
-  if (path === 'status') {
-    console.log('start')
-    watch(watchedNetwork.urlList);
-  }
-}
+};
 
-export const watchedNetwork = onChange(watchedChannels, startWatch);
+const watchChannels = onChange(watcherRssChannels, startWatch);
+
+export default watchChannels;

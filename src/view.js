@@ -1,6 +1,11 @@
 import onChange from 'on-change';
 import state from './model.js';
-import addClasses from './utils/editDOMHelpers.js';
+
+const addClasses = (node, classes = []) => {
+  classes.forEach((className) => {
+    node.classList.add(className);
+  });
+};
 
 const createFeedsList = (feeds) => {
   const container = document.createElement('div');
@@ -17,14 +22,14 @@ const createFeedsList = (feeds) => {
   feeds.forEach((feed) => {
     const li = document.createElement('li');
     addClasses(li, ['list-group-item', 'border-0']);
-    const title = document.createElement('h3');
-    title.classList.add('h6');
-    title.textContent = feed.title;
-    const description = document.createElement('p');
-    addClasses(description, ['small', 'text-black-50']);
-    description.textContent = feed.description;
-    li.append(title);
-    li.append(description);
+    const titleFeed = document.createElement('h3');
+    titleFeed.classList.add('h6');
+    titleFeed.textContent = feed.title;
+    const descriptionFeed = document.createElement('p');
+    addClasses(descriptionFeed, ['small', 'text-black-50']);
+    descriptionFeed.textContent = feed.description;
+    li.append(titleFeed);
+    li.append(descriptionFeed);
     ul.append(li);
   });
   container.append(ul);
@@ -51,9 +56,8 @@ const createPostsList = (posts) => {
     link.setAttribute('href', post.link);
     link.setAttribute('data-id', post.id);
     link.setAttribute('target', '_blank');
-    watchedState.uiState.readPosts.find((item) => item === post.id)
-      ? link.classList.add('fw-normal')
-      : link.classList.add('fw-bold');
+    const readClass = state.uiState.readPosts.find((item) => item === post.id) ? 'fw-normal' : 'fw-bold';
+    link.classList.add(readClass);
     const button = document.createElement('button');
     addClasses(button, ['btn', 'btn-outline-primary', 'btn-sm']);
     button.setAttribute('type', 'button');
@@ -70,7 +74,7 @@ const createPostsList = (posts) => {
 };
 
 export class View {
-  render(path) {
+  static render(path) {
     if (path === 'rssForm.state' || path === 'rssForm.error') {
       const input = document.querySelector('#url-input');
       const feedback = document.querySelector('.feedback');
@@ -113,5 +117,4 @@ export class View {
   }
 }
 
-const view = new View();
-export const watchedState = onChange(state, view.render);
+export const watchedState = onChange(state, View.render);

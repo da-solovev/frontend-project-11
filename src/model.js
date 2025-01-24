@@ -1,7 +1,6 @@
 export default {
   rssForm: {
     state: 'filling',
-    links: [],
     error: null,
   },
   data: {
