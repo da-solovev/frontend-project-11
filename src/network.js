@@ -3,6 +3,7 @@ import onChange from 'on-change';
 import state from './model.js';
 import { parseRSS, generateNewPosts } from './utils/parse.js';
 import { watchedState } from './view.js';
+import generateProxyUrl from './utils/proxy.js';
 
 const watcherRssChannels = {
   urls: [],
@@ -10,10 +11,11 @@ const watcherRssChannels = {
 };
 
 const watch = (urls) => {
-  const watchedChannels = urls.map((url) => axios.get(url)
+  const watchedChannels = urls.map((url) => axios.get(generateProxyUrl(url))
     .catch((err) => {
       throw err;
     }));
+
   Promise.all(watchedChannels)
     .then((responces) => {
       const parseData = responces.map((responce) => parseRSS(responce.data.contents));
@@ -27,13 +29,15 @@ const watch = (urls) => {
         watchedState.data.posts = [...newPosts, ...watchedState.data.posts];
       });
     })
-    .then(() => setTimeout(() => watch(urls), 5000));
+    .then(() => setTimeout(() => watch(watcherRssChannels.urls), 5000));
 };
 
 const startWatch = (path) => {
   if (path === 'urls') {
+    if (watcherRssChannels.status === 'off') {
+      watch(watcherRssChannels.urls);
+    }
     watcherRssChannels.status = 'on';
-    watch(watcherRssChannels.urls);
   }
 };
 
