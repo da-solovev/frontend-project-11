@@ -13,19 +13,20 @@ export default (i18nextInstance) => {
   const handleSubmitForm = async (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
-    const proxyUrl = generateProxyUrl(formData.get('url'));
-    validateUrl(i18nextInstance, proxyUrl, watchChannels.urls)
+    const url = formData.get('url');
+    const proxyUrl = generateProxyUrl(url);
+    validateUrl(i18nextInstance, url, watchChannels.urls)
       .then(() => {
         watchedState.rssForm.state = 'sending';
         return axios.get(proxyUrl);
       })
       .then((response) => {
         const parseData = parseRSS(response.data.contents);
-        const newFeed = generateNewFeed(parseData, proxyUrl);
+        const newFeed = generateNewFeed(parseData, url);
         const newPosts = generateNewPosts(parseData, newFeed.id);
         watchedState.data.feeds = [newFeed, ...watchedState.data.feeds];
         watchedState.data.posts = [...newPosts, ...watchedState.data.posts];
-        watchChannels.urls = [...watchChannels.urls, proxyUrl.href];
+        watchChannels.urls = [...watchChannels.urls, url];
         rssInputForm.reset();
         input.focus();
         watchedState.rssForm.state = 'successful';
