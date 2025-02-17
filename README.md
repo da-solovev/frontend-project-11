@@ -8,5 +8,5 @@ Rss Reader — сервис для агрегации RSS-потоков, с п�
 make install
 make build
 ```
-![Изображение с демонстрацией](https://ibb.co/cSzK3KdP)
-Демо: https://frontend-project-11-tau-nine.vercel.app/
+[![presentation.jpg](https://i.postimg.cc/65YVnF15/presentation.jpg)](https://postimg.cc/BXP1G70d)
+Демонстрация: https://frontend-project-11-tau-nine.vercel.app/
