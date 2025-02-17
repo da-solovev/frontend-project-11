@@ -1,6 +1,6 @@
 import i18next from 'i18next';
 import './style/index.scss';
-import controller from './controller.js';
+import runController from './controller.js';
 import ru from './locale/ru.js';
 import en from './locale/en.js';
 import state from './model.js';
@@ -14,7 +14,5 @@ export default async () => {
       ru,
       en,
     },
-  });
-
-  controller(i18nextInstance);
+  }).then(() => runController(i18nextInstance));
 };

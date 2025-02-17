@@ -13,7 +13,7 @@ lint-fix:
 dev:
 	npx webpack serve
 
-build_prod:
+build:
 	npm run build:prod
 
 build_dev:

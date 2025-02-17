@@ -9,6 +9,7 @@ export default {
   },
   uiState: {
     readPosts: [],
+    openPost: null,
   },
   locale: 'ru',
 };

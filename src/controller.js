@@ -8,7 +8,6 @@ import getErrorMessage from './errorsMessage.js';
 
 export default (i18nextInstance) => {
   const rssInputForm = document.querySelector('form.rss-form');
-  const input = document.querySelector('#url-input');
 
   const handleSubmitForm = async (e) => {
     e.preventDefault();
@@ -27,8 +26,6 @@ export default (i18nextInstance) => {
         watchedState.data.feeds = [newFeed, ...watchedState.data.feeds];
         watchedState.data.posts = [...newPosts, ...watchedState.data.posts];
         watchChannels.urls = [...watchChannels.urls, url];
-        rssInputForm.reset();
-        input.focus();
         watchedState.rssForm.state = 'successful';
       })
       .catch((err) => {
@@ -42,13 +39,7 @@ export default (i18nextInstance) => {
     if (!e.target.closest('button')) {
       return;
     }
-    const post = watchedState.data.posts.find((item) => item.id === e.target.dataset.id);
-    const modalTitle = document.querySelector('.modal-title');
-    const modalDescription = document.querySelector('.modal-body');
-    const modalLinkBtn = document.querySelector('.modal-footer a');
-    modalTitle.textContent = post.title;
-    modalDescription.textContent = post.description;
-    modalLinkBtn.setAttribute('href', post.link);
+    watchedState.uiState.openPost = e.target.dataset.id;
     if (!watchedState.uiState.readPosts.find((item) => item === e.target.dataset.id)) {
       watchedState.uiState.readPosts = [...watchedState.uiState.readPosts, e.target.dataset.id];
     }

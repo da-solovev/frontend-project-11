@@ -78,6 +78,7 @@ export class View {
     if (path === 'rssForm.state' || path === 'rssForm.error') {
       const input = document.querySelector('#url-input');
       const feedback = document.querySelector('.feedback');
+      const rssInputForm = document.querySelector('form.rss-form');
       input.classList.remove('is-invalid');
       feedback.classList.remove('text-danger');
       if (state.rssForm.state === 'error') {
@@ -93,6 +94,8 @@ export class View {
       }
       if (state.rssForm.state === 'successful') {
         feedback.classList.add('text-success');
+        rssInputForm.reset();
+        input.focus();
         feedback.textContent = 'RSS успешно загружен';
       }
     }
@@ -113,6 +116,15 @@ export class View {
       const postsList = createPostsList(state.data.posts);
       posts.innerHTML = '';
       posts.append(postsList);
+    }
+    if (path === 'uiState.openPost') {
+      const post = state.data.posts.find((item) => item.id === state.uiState.openPost);
+      const modalTitle = document.querySelector('.modal-title');
+      const modalDescription = document.querySelector('.modal-body');
+      const modalLinkBtn = document.querySelector('.modal-footer a');
+      modalTitle.textContent = post.title;
+      modalDescription.textContent = post.description;
+      modalLinkBtn.setAttribute('href', post.link);
     }
   }
 }

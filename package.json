@@ -1,8 +1,8 @@
 {
   "name": "@hexlet/code",
   "version": "1.0.0",
-  "description": "[![Actions Status](https://github.com/da-solovev/frontend-project-11/actions/workflows/hexlet-check.yml/badge.svg)](https://github.com/da-solovev/frontend-project-11/actions)",
-  "main": "index.js",
+  "description": "RSS Reader",
+  "main": "src/index.js",
   "type": "module",
   "scripts": {
     "build:dev": "webpack --env mode=development",
